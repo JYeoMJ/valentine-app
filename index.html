@@ -2,15 +2,22 @@
 <html>
   <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Will You Be My Valentine?</title>
-    <!-- Add Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Add React and ReactDOM -->
-    <script src="https://unpkg.com/react@17/umd/react.production.min.js"></script>
-    <script src="https://unpkg.com/react-dom@17/umd/react-dom.production.min.js"></script>
+    
+    <!-- React -->
+    <script crossorigin src="https://unpkg.com/react@17/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
+    
+    <!-- Babel -->
     <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
-    <!-- Add Lucide Icons -->
+    
+    <!-- Tailwind -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Lucide Icons - Updated -->
     <script src="https://unpkg.com/lucide@latest"></script>
+
     <style>
       @keyframes float {
         0% { transform: translateY(0) rotate(0deg); opacity: 1; }
@@ -30,6 +37,133 @@
   </head>
   <body>
     <div id="root"></div>
-    <script src="app.js" type="text/babel"></script>
+    <script type="text/babel">
+      // Move app.js content directly into index.html
+      const { useState, useEffect } = React;
+
+      function ValentineApp() {
+        const [message, setMessage] = useState('');
+        const [noCount, setNoCount] = useState(0);
+        const [yesPressed, setYesPressed] = useState(false);
+        const [buttonSize, setButtonSize] = useState(1);
+        const [hearts, setHearts] = useState([]);
+        const [showCoffeeDate, setShowCoffeeDate] = useState(false);
+
+        useEffect(() => {
+          setButtonSize(1 + noCount * 0.1);
+        }, [noCount]);
+
+        const getRandomPosition = () => {
+          const newTop = Math.floor(Math.random() * 80) + 10;
+          const newLeft = Math.floor(Math.random() * 80) + 10;
+          return { top: `${newTop}%`, left: `${newLeft}%` };
+        };
+
+        const noMessages = [
+          "Are you sure? 🥺",
+          "Really sure? 😢",
+          "Think again! 🤔",
+          "Last chance! 💝",
+          "Surely not! 😭",
+          "You're breaking my heart! 💔",
+          "I'll cry! 😪",
+          "Don't be mean! 🥹",
+          "Change of heart? 🫀",
+          "Pretty please! 🙏"
+        ];
+
+        const handleYesClick = () => {
+          setYesPressed(true);
+          setMessage("Yay! You've made me the happiest! 💖");
+          
+          for (let i = 0; i < 20; i++) {
+            setTimeout(() => {
+              setHearts(prev => [...prev, {
+                id: Date.now() + i,
+                left: `${Math.random() * 100}%`,
+                animationDuration: `${Math.random() * 2 + 2}s`,
+                scale: Math.random() * 0.5 + 0.5
+              }]);
+            }, i * 100);
+          }
+
+          setTimeout(() => {
+            setShowCoffeeDate(true);
+          }, 2000);
+        };
+
+        const handleNoClick = () => {
+          setNoCount(prev => prev + 1);
+          setMessage(noMessages[Math.min(noCount, noMessages.length - 1)]);
+        };
+
+        // Simplified version without Lucide icons
+        return (
+          <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-pink-100 to-pink-200 p-4">
+            {hearts.map(heart => (
+              <div
+                key={heart.id}
+                className="absolute text-pink-500 animate-float"
+                style={{
+                  left: heart.left,
+                  animationDuration: heart.animationDuration,
+                  transform: `scale(${heart.scale})`
+                }}
+              >
+                ❤️
+              </div>
+            ))}
+            
+            <div className="text-center">
+              <h1 className="text-4xl font-bold text-pink-600 mb-8 animate-pulse">
+                {yesPressed ? "❤️ Thank You! ❤️" : "Will You Be My Valentine?"}
+              </h1>
+              
+              {!yesPressed && (
+                <div className="relative h-48 w-full max-w-md mb-4">
+                  <button
+                    onClick={handleYesClick}
+                    className="bg-pink-500 hover:bg-pink-600 text-white font-bold py-3 px-8 rounded-lg shadow-lg transition-all duration-200 hover:shadow-xl"
+                    style={{ transform: `scale(${buttonSize})` }}
+                  >
+                    Yes ❤️
+                  </button>
+                  
+                  <button
+                    onClick={handleNoClick}
+                    className="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-6 rounded-lg shadow-md transition-all duration-200 absolute"
+                    style={getRandomPosition()}
+                  >
+                    No ✖️
+                  </button>
+                </div>
+              )}
+
+              {message && (
+                <p className="text-xl text-pink-600 font-semibold mt-4 animate-bounce">
+                  {message}
+                </p>
+              )}
+
+              {showCoffeeDate && (
+                <div className="mt-8 p-6 bg-white rounded-lg shadow-xl animate-fade-in">
+                  <h2 className="text-2xl font-bold text-pink-600 mb-4">
+                    Let's make it special! ⭐
+                  </h2>
+                  <p className="text-lg text-gray-700 mb-4">
+                    How about we start with a coffee date? ☕
+                  </p>
+                  <p className="text-lg text-gray-700">
+                    And maybe some music? 🎵
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
+        );
+      }
+
+      ReactDOM.render(<ValentineApp />, document.getElementById('root'));
+    </script>
   </body>
 </html>
